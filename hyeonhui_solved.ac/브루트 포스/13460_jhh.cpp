@@ -75,7 +75,17 @@ int check(vector<string> a, vector<int>& dir) {
 	}
 	return -1;
 }
-
+bool valid(vector<int>& dir) {
+	int l = dir.size();
+	for (int i = 0; i + 1 < l; i++) {
+		if (dir[i] == 0 && dir[i + 1] == 1)return false;
+		if (dir[i] == 1 && dir[i + 1] == 0)return false;
+		if (dir[i] == 2 && dir[i + 1] == 3)return false;
+		if (dir[i] == 3 && dir[i + 1] == 2)return false;
+		if (dir[i] == dir[i + 1]) return false;
+	}
+	return true;
+}
 int main() {
 	int n, m;
 	cin >> n >> m;
@@ -84,5 +94,14 @@ int main() {
 		cin >> a[i];
 	int ans = -1;
 	
+	for (int k = 0; k < (1 << (LIMIT * 2)); k++) {
+		vector<int> dir = gen(k);
+		if (!valid(dir)) continue;
+		int cur = check(a, dir);
+		if (cur == -1) continue;
+		if (ans == -1 || ans > cur) ans = cur;
+	}
+	cout << ans << '\n';
+	return 0;
 	return 0;
 }
