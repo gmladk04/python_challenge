@@ -35,7 +35,7 @@ int main() {
 			}
 		
 		if (rs+1 <ls) {
-			for (int j = 0; j < ls; j++) {
+			for (int j = 0; j < rs; j++) {
 				dq.push_front(dq[dq.size() - 1]);
 				dq.pop_back();
 			}
