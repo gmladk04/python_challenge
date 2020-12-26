@@ -3,45 +3,47 @@
 using namespace std;
 
 int main() {
-	
+	ios_base::sync_with_stdio(false);
+	cout.tie(NULL);
+	cin.tie(NULL);
+
 	int n;
 	cin >> n;
 
-	int ans[N+1][2] = { 0, };
-	int index = 0;
+	int arr[N] = { 0, };
 
-	int num;
-	cin >> num;
+	for (int i = 0; i < n; i++)
+		cin >> arr[i];
 
-	ans[index][0] = num;
-	ans[index++][1] = 1;
-	
+	int dp[N] = { 0, };
+
+	dp[0] = 1;
+	int main_num = arr[0];
+	int sub_len = 0;
+	int sub_num;
+
 	for (int i = 1; i < n; i++) {
-		int num;
-		cin >> num;
+		if (main_num < arr[i]) {
+			dp[i] = dp[i - 1] + 1;
+			main_num = arr[i];
+		}
+		else {
+			sub_num = arr[i];
 
-		bool flag = true;
+			if (sub_num < arr[i])
+				sub_len++;
+			else if( sub_num > arr[i])
+				sub_len = 0;
 
-		for (int j = 0; j < index; j++) {
-			if (ans[j][0] < num) {
-				ans[j][0] = num;
-				ans[j][1]++;
-				flag = false;
+			if (dp[i - 1] < sub_len) {
+				main_num = arr[i];
+				dp[i] = sub_len;
+				sub_len = 0;
 			}
-		}
-
-		if (flag) {
-			ans[index][0] = num;
-			ans[index++][1] = 1;
+			else
+				dp[i] = dp[i - 1];
 		}
 	}
-	
 
-	int maxx = -1;
-	for (int i = 0; i < index; i++) {
-		if (ans[i][1] > maxx)
-			maxx = ans[i][1];
-	}
-
-	cout << maxx << "\n";
+	cout << dp[n - 1] << "\n";
 }
