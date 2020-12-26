@@ -1,51 +1,46 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include<cstdio>
-long long a[100000];
-long long tree[3000000];
-long long init(int node, int start, int end) {
-	if (start == end)
-		return tree[node] = a[start];
-	else
-		return tree[node] = init(node * 2, start, (start + end) / 2) + init(node * 2 + 1, (start + end) / 2 + 1, end);
-}
-void update(int node, int start, int end, int i, long long diff) {
-	if (i<start || i>end) return;
-	tree[node] = tree[node] + diff;
-	if (start != end) {
-		update(node * 2, start, (start + end) / 2, i, diff);
-		update(node * 2 + 1, (start + end) / 2 + 1, end, i, diff);
+#include<vector>
+using namespace std;
+long long sum(vector<long long>& tree, int i) {
+	long long ans = 0;
+	while (i > 0) {
+		ans += tree[i];
+		i -= (i & -i);
 	}
+	return ans;
 }
-long long sum(int node, int start, int end, int i, int j) {
-	if (i > end || j < start)
-		return 0;
-	if (i <= start && end <= j)
-		return tree[node];
-	return sum(node * 2, start, (start + end) / 2, i, j) + sum(node * 2 + 1,(start + end) / 2 + 1, end, i, j);
+void update(vector<long long>& tree, int i, long long diff) {
+	while (i < tree.size()) {
+		tree[i] += diff;
+		i += (i & -i);
+	}
 }
 int main() {
 	int n, m, k;
 	scanf("%d %d %d", &n, &m, &k);
-	m += k;
-	for (int i = 0; i < n; i++)
+	vector<long long> a(n + 1);
+	vector<long long> tree(n + 1);
+	for (int i = 1; i <= n; i++) {
 		scanf("%lld", &a[i]);
-	init(1, 0, n - 1);
+		update(tree, i, a[i]);
+	}
+	m += k;
 	while (m--) {
-		int t1, t2, t3;
+		int t1;
 		scanf("%d", &t1);
 		if (t1 == 1) {
 			int t2;
 			long long t3;
 			scanf("%d %lld", &t2, &t3);
-			t2 -= 1;
 			long long diff = t3 - a[t2];
 			a[t2] = t3;
-			update(1, 0, n - 1, t2, diff);
+			update(tree, t2, diff);
 		}
-		else if (t1 == 2) {
+		else {
 			int t2, t3;
 			scanf("%d %d", &t2, &t3);
-			printf("%lld\n", sum(1, 0, n - 1, t2 - 1, t3 - 1));
+			printf("%lld\n", sum(tree, t3) - sum(tree, t2 - 1));
 		}
 	}
 	return 0;
